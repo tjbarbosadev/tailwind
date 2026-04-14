@@ -12,7 +12,16 @@
 
     --color-green-100: #1f8459;
     --color-green-200: #2cb178;
-
-    --text-xxs: 0.625rem;
   }
+}
+
+@theme {
+  --text-xxs: 0.625rem;
+}
+
+select {
+  appearance: none;
+  background-image: url('./assets/chevron-down.svg');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
 }
