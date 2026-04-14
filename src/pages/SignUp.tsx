@@ -16,7 +16,7 @@ export function SignUp() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full flex flex-col gap-4">
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
       <Input
         required
         legend="Nome"
@@ -55,7 +55,7 @@ export function SignUp() {
 
       <a
         href="/"
-        className="text-sm font-semibold text-gray-100 mt-10 mb-4 text-center hover:text-green-800 trasnsition ease-linear"
+        className="trasnsition mt-10 mb-4 text-center text-sm font-semibold text-gray-100 ease-linear hover:text-green-800"
       >
         Já tem uma conta? Entrar
       </a>
