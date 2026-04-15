@@ -25,3 +25,16 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
 }
+
+::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-200);
+  border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-gray-300);
+}
