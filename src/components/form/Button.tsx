@@ -1,18 +1,33 @@
+import { classMerge } from '../../utils/classMerge';
+
 type Props = React.ComponentProps<'button'> & {
   isLoading?: boolean;
+  variant?: 'base' | 'icon' | 'iconSmall';
+};
+
+const variants = {
+  button: {
+    base: 'h-12',
+    icon: 'h-12 w-12',
+    iconSmall: 'h-10 w-10',
+  },
 };
 
 export function Button({
   isLoading,
-  type = 'button',
   children,
+  type = 'button',
+  variant = 'base',
   ...rest
 }: Props) {
   return (
     <button
       type={type}
       disabled={isLoading}
-      className="flex items-center justify-center bg-green-100 rounded-lg text-white cursor-pointer hover:bg-green-200 px-4 py-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+      className={classMerge([
+        'flex cursor-pointer items-center justify-center rounded-lg bg-green-100 px-4 py-2 text-white hover:bg-green-200 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500',
+        variants.button[variant],
+      ])}
       {...rest}
     >
       {isLoading ? 'Carregando...' : children}
