@@ -2,6 +2,9 @@ import { useState, type SubmitEvent } from 'react';
 import { Button } from '../components/form/Button';
 import { Input } from '../components/form/Input';
 import z, { ZodError } from 'zod';
+import { api } from '../services/api';
+import { useNavigate } from 'react-router';
+import { AxiosError } from 'axios';
 
 const signUpSchema = z
   .object({
@@ -22,7 +25,9 @@ export function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  function onSubmit(event: SubmitEvent<HTMLFormElement>) {
+  const navigate = useNavigate();
+
+  async function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
@@ -34,9 +39,19 @@ export function SignUp() {
         password,
         confirmPassword,
       });
+
+      await api.post('/users', data);
+
+      if (confirm('Conta criada com sucesso! Deseja entrar?')) {
+        navigate('/');
+      }
     } catch (error) {
       if (error instanceof ZodError) {
         throw new Error(error.issues.map((err) => err.message).join(', '));
+      }
+
+      if (error instanceof AxiosError) {
+        throw new Error(error.response?.data.message || 'Erro ao criar conta');
       }
 
       throw error;

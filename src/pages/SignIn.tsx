@@ -1,34 +1,66 @@
-import { useState, type SubmitEvent } from 'react';
+import { useActionState } from 'react';
 import { Button } from '../components/form/Button';
 import { Input } from '../components/form/Input';
+import z, { ZodError } from 'zod';
+import { api } from '../services/api';
+import { AxiosError } from 'axios';
+
+const signInSchema = z.object({
+  email: z.string().email('E-mail inválido'),
+  password: z
+    .string()
+    .trim()
+    .min(6, 'A senha deve conter no mínimo 6 caracteres'),
+});
 
 export function SignIn() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, formAction, isLoading] = useActionState(signIn, null);
 
-  function onSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function signIn(prevState: any, formData: FormData) {
+    try {
+      const data = signInSchema.parse({
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+      });
 
-    console.log(email, password);
+      const response = await api.post('/sessions', data);
+      console.log(response.data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return { message: error.issues.map((err) => err.message).join(', ') };
+      }
+
+      if (error instanceof AxiosError) {
+        return { message: error.response?.data.message };
+      }
+
+      return { message: 'Erro ao entrar, tente novamente' };
+    }
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full flex flex-col gap-4">
+    <form action={formAction} className="flex w-full flex-col gap-4">
       <Input
         required
+        name="email"
         legend="E-mail"
         type="email"
         placeholder="seu-email@email.com"
-        onChange={(e) => setEmail(e.target.value)}
       />
 
       <Input
+        required
+        name="password"
         legend="Senha"
         type="password"
         placeholder="123456"
-        onChange={(e) => setPassword(e.target.value)}
       />
+
+      {state?.message && (
+        <p className="text-center text-sm font-semibold text-red-500">
+          {state.message}
+        </p>
+      )}
 
       <Button type="submit" isLoading={isLoading}>
         Entrar
@@ -36,7 +68,7 @@ export function SignIn() {
 
       <a
         href="/signup"
-        className="text-sm font-semibold text-gray-100 mt-10 mb-4 text-center hover:text-green-800 trasnsition ease-linear"
+        className="trasnsition mt-10 mb-4 text-center text-sm font-semibold text-gray-100 ease-linear hover:text-green-800"
       >
         Criar conta
       </a>
