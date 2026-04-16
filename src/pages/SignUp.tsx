@@ -1,6 +1,19 @@
 import { useState, type SubmitEvent } from 'react';
 import { Button } from '../components/form/Button';
 import { Input } from '../components/form/Input';
+import z, { ZodError } from 'zod';
+
+const signUpSchema = z
+  .object({
+    name: z.string().min(1, 'O nome é obrigatório'),
+    email: z.string().email('E-mail inválido'),
+    password: z.string().min(6, 'A senha deve conter no mínimo 6 caracteres'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem',
+    path: ['confirmPassword'],
+  });
 
 export function SignUp() {
   const [name, setName] = useState('');
@@ -12,7 +25,24 @@ export function SignUp() {
   function onSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    console.log(name, email, password, confirmPassword);
+    try {
+      setIsLoading(true);
+
+      const data = signUpSchema.parse({
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new Error(error.issues.map((err) => err.message).join(', '));
+      }
+
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
