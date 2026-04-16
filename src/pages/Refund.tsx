@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
 import { Button } from '../components/form/Button';
 import { Upload } from '../components/form/Upload';
+
+import fileSvg from '../assets/file.svg';
 
 import { CATEGORIES, CATEORIES_KEYS } from '../utils/catogories';
 
@@ -16,6 +18,8 @@ export function Refund() {
   const [filename, setFilename] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const params = useParams<{ id: string }>();
+  console.log(params.id);
 
   function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,6 +45,7 @@ export function Refund() {
         legend="Nome da solicitação"
         placeholder="Ex: Hospedagem"
         value={name}
+        disabled={!!params.id}
         onChange={(e) => setName(e.target.value)}
       />
 
@@ -49,6 +54,7 @@ export function Refund() {
           required
           legend="Categoria"
           value={category}
+          disabled={!!params.id}
           onChange={(e) => setCategory(e.target.value)}
         >
           {CATEORIES_KEYS.map((key) => (
@@ -64,23 +70,44 @@ export function Refund() {
           placeholder="Ex: R$ 10,00"
           type="number"
           value={amount}
+          disabled={!!params.id}
           onChange={(e) => setAmount(e.target.value)}
           min={0}
           step={0.01}
         />
       </div>
 
-      <Upload
-        filename={filename}
-        legend="Comprovante"
-        onChange={(e) => {
-          e.target.files && setFilename(e.target.files[0].name);
-        }}
-      />
+      {(!params.id && (
+        <>
+          <Upload
+            filename={filename}
+            legend="Comprovante"
+            disabled={!!params.id}
+            onChange={(e) => {
+              e.target.files && setFilename(e.target.files[0].name);
+            }}
+          />
 
-      <Button type="submit" isLoading={isLoading}>
-        Enviar solicitação
-      </Button>
+          <Button type="submit" isLoading={isLoading}>
+            Enviar solicitação
+          </Button>
+        </>
+      )) || (
+        <>
+          <a
+            href="/"
+            target="_blank"
+            className="flex items-center justify-center gap-2 text-green-100 hover:opacity-70"
+          >
+            <img src={fileSvg} alt="Comprovante" />
+            <span>Abrir comprovante</span>
+          </a>
+
+          <Button variant="base" onClick={() => navigate(-1)}>
+            Voltar para o dashboard
+          </Button>
+        </>
+      )}
     </form>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Input } from '../components/form/Input';
 import { Button } from '../components/form/Button';
-import { RefundItem } from '../components/RefundItem';
+import { RefundItem, type RefundItemProps } from '../components/RefundItem';
 
 import searchSvg from '../assets/search.svg';
 import { CATEGORIES } from '../utils/catogories';
@@ -21,6 +21,7 @@ export function Dashboard() {
   const [name, setName] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
+  const [refunds, setRefunds] = useState<RefundItemProps[]>([REFUND_EXAMPLE]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,17 +62,15 @@ export function Dashboard() {
       </form>
 
       <div className="flex max-h-102 flex-col overflow-y-auto border-b border-b-gray-400">
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
-        <RefundItem data={REFUND_EXAMPLE} />
+        {refunds.map((refund) => (
+          <RefundItem
+            key={refund.id}
+            data={refund}
+            href={`/refund/${refund.id}`}
+          />
+        ))}
       </div>
+
       <div className="mt-4">
         <Pagination
           current={page}
