@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# Sistema de Reembolsos (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web em React para solicitação e acompanhamento de reembolsos, com navegação por perfil (`manager` e `employee`) e interface estilizada com Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features implementadas até agora
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Autenticação com telas de `login` e `cadastro` (formulários prontos na interface).
+- Fluxo de solicitação de reembolso para colaborador com:
+  - nome da solicitação;
+  - categoria da despesa;
+  - valor;
+  - upload de comprovante.
+- Tela de confirmação de envio com proteção de rota (acesso apenas após submissão).
+- Dashboard de gerente com:
+  - busca por nome (estrutura de filtro pronta);
+  - listagem de solicitações;
+  - paginação (anterior/próxima).
+- Visualização de reembolso por ID para gerente (`/refund/:id`) em modo de leitura.
+- Layouts separados para área pública (auth) e área logada (app).
+- Roteamento por perfil de usuário com fallback para página `404`.
+- Componentes reutilizáveis de UI (`Button`, `Input`, `Select`, `Upload`, `Pagination`, `Loading`, `Header`).
+- Catálogo de categorias com ícones (alimentação, transporte, hospedagem, serviços e outros).
 
-## React Compiler
+## Status atual
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- O projeto está em fase de frontend/protótipo.
+- Fluxos principais de navegação e formulários estão prontos visualmente.
+- Integração com backend e persistência de dados ainda não foi implementada (dados e sessão estão mockados no código).
 
-## Expanding the ESLint configuration
+## Tecnologias
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19
+- TypeScript
+- Vite
+- React Router
+- Tailwind CSS 4
+- clsx + tailwind-merge
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Como rodar localmente
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Depois, abra a URL exibida no terminal (normalmente `http://localhost:5173`).

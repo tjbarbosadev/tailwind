@@ -7,7 +7,7 @@ import { EmployeeRoutes } from './EmployeeRoutes';
 const isLoading = false;
 const session = {
   user: {
-    role: '',
+    role: 'employee',
   },
 };
 
