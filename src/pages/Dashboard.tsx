@@ -7,6 +7,7 @@ import { RefundItem } from '../components/RefundItem';
 import searchSvg from '../assets/search.svg';
 import { CATEGORIES } from '../utils/catogories';
 import { formatCurrency } from '../utils/formatCurrency';
+import { Pagination } from '../components/Pagination';
 
 const REFUND_EXAMPLE = {
   id: '1',
@@ -18,10 +19,25 @@ const REFUND_EXAMPLE = {
 
 export function Dashboard() {
   const [name, setName] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(10);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     console.log(name);
+  }
+
+  function handlePagination(action: 'prev' | 'next') {
+    setPage((prev) => {
+      if (action === 'next' && prev < totalPages) {
+        return prev + 1;
+      }
+
+      if (action === 'prev' && prev > 1) {
+        return prev - 1;
+      }
+      return prev;
+    });
   }
 
   return (
@@ -44,7 +60,7 @@ export function Dashboard() {
         </Button>
       </form>
 
-      <div className="flex max-h-100 flex-col overflow-y-auto">
+      <div className="flex max-h-102 flex-col overflow-y-auto border-b border-b-gray-400">
         <RefundItem data={REFUND_EXAMPLE} />
         <RefundItem data={REFUND_EXAMPLE} />
         <RefundItem data={REFUND_EXAMPLE} />
@@ -55,6 +71,14 @@ export function Dashboard() {
         <RefundItem data={REFUND_EXAMPLE} />
         <RefundItem data={REFUND_EXAMPLE} />
         <RefundItem data={REFUND_EXAMPLE} />
+      </div>
+      <div className="mt-4">
+        <Pagination
+          current={page}
+          total={totalPages}
+          nextPage={() => handlePagination('next')}
+          prevPage={() => handlePagination('prev')}
+        />
       </div>
     </div>
   );

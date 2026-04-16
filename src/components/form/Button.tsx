@@ -9,7 +9,7 @@ const variants = {
   button: {
     base: 'h-12',
     icon: 'h-12 w-12',
-    iconSmall: 'h-10 w-10',
+    iconSmall: 'h-8 w-8',
   },
 };
 
@@ -25,7 +25,7 @@ export function Button({
       type={type}
       disabled={isLoading}
       className={classMerge([
-        'flex cursor-pointer items-center justify-center rounded-lg bg-green-100 px-4 py-2 text-white hover:bg-green-200 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500',
+        'flex cursor-pointer items-center justify-center rounded-lg bg-green-100 text-white hover:bg-green-200 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500',
         variants.button[variant],
       ])}
       {...rest}
