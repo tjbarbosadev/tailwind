@@ -2,7 +2,7 @@ import uploadSvg from '../../assets/upload.svg';
 
 type Props = React.ComponentProps<'input'> & {
   legend?: string;
-  filename?: string | null;
+  filename?: File | null;
 };
 
 export function Upload({ filename = null, legend, ...rest }: Props) {
@@ -13,7 +13,7 @@ export function Upload({ filename = null, legend, ...rest }: Props) {
       <div className="flex h-12 w-full items-center rounded-lg border border-gray-300 bg-transparent outline-none">
         <input type="file" className="hidden" id="upload" {...rest} />
         <span className="flex-1 pl-4 text-xs text-gray-100">
-          {filename || 'Nenhum arquivo selecionado'}
+          {filename ? filename.name : 'Nenhum arquivo selecionado'}
         </span>
 
         <label

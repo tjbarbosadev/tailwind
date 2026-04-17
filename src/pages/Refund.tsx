@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { data, useNavigate, useParams } from 'react-router';
 
 import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
@@ -8,22 +8,86 @@ import { Upload } from '../components/form/Upload';
 
 import fileSvg from '../assets/file.svg';
 
-import { CATEGORIES, CATEORIES_KEYS } from '../utils/catogories';
+import { CATEGORIES, CATEGORIES_KEYS } from '../utils/catogories';
+import z from 'zod';
+import { AxiosError } from 'axios';
+import { api } from '../services/api';
+
+const refundSchema = z.object({
+  description: z.string().min(1, 'A descrição é obrigatória'),
+  amount: z.coerce
+    .number('Valor inválido')
+    .positive('O valor deve ser positivo'),
+  category: z.string().min(1, 'A categoria é obrigatória'),
+});
 
 export function Refund() {
-  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [filename, setFilename] = useState<string | null>(null);
+  const [filename, setFilename] = useState<File | null>(null);
 
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
 
-  function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    navigate('/confirm', { state: { fromSubmit: true } });
+    if (params.id) {
+      navigate(-1);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      if (!filename) {
+        alert('O comprovante é obrigatório');
+        return;
+      }
+
+      const fileUploadFormData = new FormData();
+      fileUploadFormData.append('file', filename);
+
+      const uploadResponse = await api.post('/uploads', fileUploadFormData);
+
+      console.log({ uploadResponse });
+
+      const data = refundSchema.parse({
+        description,
+        category,
+        amount: amount.replace(',', '.'),
+      });
+
+      console.log({ ...data, filename: uploadResponse.data.fileName });
+
+      await api.post('/refunds', {
+        ...data,
+        filename: uploadResponse.data.fileName,
+      });
+
+      navigate('/confirm', { state: { fromSubmit: true } });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        alert(error.issues.map((issue) => issue.message).join('\n'));
+        return;
+      }
+
+      if (error instanceof AxiosError && error.response?.data.issues) {
+        alert(
+          error.response?.data.issues
+            .map((issue: any) => issue.message)
+            .join('\n'),
+        );
+        return;
+      }
+
+      alert('Ocorreu um erro ao enviar a solicitação');
+      return;
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -40,11 +104,11 @@ export function Refund() {
 
       <Input
         required
-        legend="Nome da solicitação"
+        legend="Descrição"
         placeholder="Ex: Hospedagem"
-        value={name}
+        value={description}
         disabled={!!params.id}
-        onChange={(e) => setName(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
       />
 
       <div className="flex gap-4">
@@ -55,7 +119,7 @@ export function Refund() {
           disabled={!!params.id}
           onChange={(e) => setCategory(e.target.value)}
         >
-          {CATEORIES_KEYS.map((key) => (
+          {CATEGORIES_KEYS.map((key) => (
             <option key={key} value={key}>
               {CATEGORIES[key].name}
             </option>
@@ -66,12 +130,9 @@ export function Refund() {
           required
           legend="Valor"
           placeholder="Ex: R$ 10,00"
-          type="number"
           value={amount}
           disabled={!!params.id}
           onChange={(e) => setAmount(e.target.value)}
-          min={0}
-          step={0.01}
         />
       </div>
 
@@ -82,7 +143,7 @@ export function Refund() {
             legend="Comprovante"
             disabled={!!params.id}
             onChange={(e) => {
-              e.target.files && setFilename(e.target.files[0].name);
+              e.target.files && setFilename(e.target.files[0]);
             }}
           />
 

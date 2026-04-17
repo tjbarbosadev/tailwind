@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import { api } from '../services/api';
 
 const LOCAL_STORAGE_KEY = '@refund';
 
@@ -13,6 +14,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       JSON.stringify(session.user),
     );
     localStorage.setItem(`${LOCAL_STORAGE_KEY}:token`, session.token);
+
+    api.defaults.headers.common['Authorization'] = `Bearer ${session.token}`;
 
     setSession(session);
   }
@@ -30,6 +33,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem(`${LOCAL_STORAGE_KEY}:token`);
 
     if (user && token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
       setSession({
         user: JSON.parse(user),
         token,

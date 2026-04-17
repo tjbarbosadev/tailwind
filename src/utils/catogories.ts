@@ -2,7 +2,7 @@ import foodSvg from '../assets/food.svg';
 import othersSvg from '../assets/others.svg';
 import servicesSg from '../assets/services.svg';
 import transportSvg from '../assets/transport.svg';
-import acoomodationSvg from '../assets/accommodation.svg';
+import accommodationSvg from '../assets/accommodation.svg';
 
 export const CATEGORIES = {
   food: {
@@ -15,7 +15,7 @@ export const CATEGORIES = {
   },
   accommodation: {
     name: 'Hospedagem',
-    icon: acoomodationSvg,
+    icon: accommodationSvg,
   },
   services: {
     name: 'Serviços',
@@ -27,6 +27,6 @@ export const CATEGORIES = {
   },
 };
 
-export const CATEORIES_KEYS = Object.keys(CATEGORIES) as Array<
+export const CATEGORIES_KEYS = Object.keys(CATEGORIES) as Array<
   keyof typeof CATEGORIES
 >;
