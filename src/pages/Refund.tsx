@@ -19,11 +19,9 @@ export function Refund() {
 
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
-  console.log(params.id);
 
   function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log({ name, amount, category, filename, isLoading });
 
     navigate('/confirm', { state: { fromSubmit: true } });
   }
