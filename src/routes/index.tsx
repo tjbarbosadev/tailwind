@@ -3,6 +3,7 @@ import { ManagerRoutes } from './ManagerRoutes';
 import { AuthRoutes } from './AuthRoutes';
 import { Loading } from '../components/Loading';
 import { EmployeeRoutes } from './EmployeeRoutes';
+import { useAuth } from '../hooks/useAuth';
 
 const isLoading = false;
 const session = {
@@ -12,6 +13,8 @@ const session = {
 };
 
 export function Routes() {
+  const { session } = useAuth();
+
   function renderRoutes() {
     switch (session?.user.role) {
       case 'manager':
