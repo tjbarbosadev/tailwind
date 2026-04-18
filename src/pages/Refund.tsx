@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { data, useNavigate, useParams } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 
 import { Input } from '../components/form/Input';
 import { Select } from '../components/form/Select';
@@ -12,6 +12,7 @@ import { CATEGORIES, CATEGORIES_KEYS } from '../utils/catogories';
 import z from 'zod';
 import { AxiosError } from 'axios';
 import { api } from '../services/api';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const refundSchema = z.object({
   description: z.string().min(1, 'A descrição é obrigatória'),
@@ -26,10 +27,28 @@ export function Refund() {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [filename, setFilename] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileUrl, setFileUrl] = useState<string | null>('');
 
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
+
+  async function fetchRefund(id: string) {
+    try {
+      const response = await api.get<RefundAPIResponse>(`/refunds/${id}`);
+      setDescription(response.data.description);
+      setAmount(formatCurrency(response.data.amount));
+      setCategory(response.data.category);
+      setFileUrl(response.data.filename);
+      setFile(null);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return alert(error.response?.data.message);
+      }
+
+      alert('Ocorreu um erro ao buscar o reembolso.');
+    }
+  }
 
   async function onSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,13 +61,13 @@ export function Refund() {
     try {
       setIsLoading(true);
 
-      if (!filename) {
+      if (!file) {
         alert('O comprovante é obrigatório');
         return;
       }
 
       const fileUploadFormData = new FormData();
-      fileUploadFormData.append('file', filename);
+      fileUploadFormData.append('file', file);
 
       const uploadResponse = await api.post('/uploads', fileUploadFormData);
 
@@ -89,6 +108,12 @@ export function Refund() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (params.id) {
+      fetchRefund(params.id);
+    }
+  }, [params.id]);
 
   return (
     <form
@@ -139,11 +164,11 @@ export function Refund() {
       {(!params.id && (
         <>
           <Upload
-            filename={filename}
+            filename={file}
             legend="Comprovante"
             disabled={!!params.id}
             onChange={(e) => {
-              e.target.files && setFilename(e.target.files[0]);
+              e.target.files && setFile(e.target.files[0]);
             }}
           />
 
@@ -154,7 +179,7 @@ export function Refund() {
       )) || (
         <>
           <a
-            href="/"
+            href={`http://localhost:3333/uploads/${fileUrl}`}
             target="_blank"
             className="flex items-center justify-center gap-2 text-green-100 hover:opacity-70"
           >

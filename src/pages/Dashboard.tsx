@@ -11,7 +11,7 @@ import { Pagination } from '../components/Pagination';
 import { api } from '../services/api';
 import { AxiosError } from 'axios';
 
-const PER_PAGE = 2;
+const PER_PAGE = 10;
 
 export function Dashboard() {
   const [name, setName] = useState('');
