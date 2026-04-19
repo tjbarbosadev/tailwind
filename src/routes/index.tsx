@@ -1,9 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter } from 'react-router';
-import { ManagerRoutes } from './ManagerRoutes';
-import { AuthRoutes } from './AuthRoutes';
 import { Loading } from '../components/Loading';
-import { EmployeeRoutes } from './EmployeeRoutes';
 import { useAuth } from '../hooks/useAuth';
+
+const ManagerRoutes = lazy(() =>
+  import('./ManagerRoutes').then((m) => ({ default: m.ManagerRoutes })),
+);
+const EmployeeRoutes = lazy(() =>
+  import('./EmployeeRoutes').then((m) => ({ default: m.EmployeeRoutes })),
+);
+const AuthRoutes = lazy(() =>
+  import('./AuthRoutes').then((m) => ({ default: m.AuthRoutes })),
+);
 
 export function Routes() {
   const { session, isLoading } = useAuth();
@@ -23,5 +31,9 @@ export function Routes() {
     return <Loading />;
   }
 
-  return <BrowserRouter>{renderRoutes()}</BrowserRouter>;
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<Loading />}>{renderRoutes()}</Suspense>
+    </BrowserRouter>
+  );
 }

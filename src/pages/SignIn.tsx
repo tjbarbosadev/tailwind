@@ -18,7 +18,7 @@ export function SignIn() {
   const [state, formAction, isLoading] = useActionState(signIn, null);
   const auth = useAuth();
 
-  async function signIn(prevState: any, formData: FormData) {
+  async function signIn(_prevState: any, formData: FormData) {
     try {
       const data = signInSchema.parse({
         email: formData.get('email') as string,
